@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Databricks, Inc.
+ * Copyright 2021 Databricks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.databricks.labs.gis
 
 import com.uber.h3core.H3Core
 import com.uber.h3core.util.GeoCoord
-import org.apache.http.annotation.Experimental
+import org.json4s.JsonAST.JObject
 import org.json4s.JsonDSL._
 import org.json4s.{DefaultFormats, JArray}
 import org.json4s.jackson.JsonMethods.{compact, parse, render}
@@ -74,7 +74,7 @@ package object ml {
 
     /**
      * Convert a case class Geopoint to its H3 java object
-     * @return the H3 java object [[com.uber.h3core.util.GeoCoord]]
+     * @return the H3 java object GeoCoord
      */
     def toGeoCoord: GeoCoord = new GeoCoord(latitude, longitude)
   }
@@ -101,24 +101,6 @@ package object ml {
       })
     }
 
-    @Experimental
-    def predict(it: Iterable[GeoPoint], precision: Int): Iterable[Option[Long]] = {
-      val tiles = clusters.flatMap(c => {
-        c.getTiles(precision).map(l => (l, c))
-      }).toMap
-
-      it.map(g => {
-        tiles.get(g.toH3(precision)).map(_.id)
-      })
-    }
-
-    @Experimental
-    def predict(latitude: Double, longitude: Double, precision: Int): Option[Long] = {
-      clusters.flatMap(c => {
-        c.getTiles(precision).map(l => (l, c))
-      }).toMap.get(GeoUtils.geoToH3(latitude, longitude, precision)).map(_.id)
-    }
-
     def toGeoJson: String = {
       val geojson =
         ("type" -> "FeatureCollection") ~
@@ -143,23 +125,29 @@ package object ml {
       implicit val formats: DefaultFormats.type = DefaultFormats
       val geojson = parse(jsonStr)
 
-      val clusters = (geojson \ "features") match {
+      val clusters = geojson \ "features" match {
         case JArray(features) => features map { cluster =>
           val id = (cluster \ "id").extractOrElse[Long](-1L)
-          val points = (cluster \ "geometry" \ "coordinates").asInstanceOf[JArray].arr.head match {
-            case JArray(coordinates) => coordinates.map {
-              case JArray(List(v1, v2)) => GeoPoint(v2.extract[Double], v1.extract[Double])
+          val points = cluster \ "geometry" \ "coordinates" match {
+            case JArray(List(jarr)) => jarr match {
+              case JArray(xs) => xs map {
+                case JArray(List(v1, v2)) => GeoPoint(v2.extract[Double], v1.extract[Double])
+                case _ => throw new IllegalArgumentException("Coordinates should be in format [longitude,latitude]")
+              }
+              case _ => throw new IllegalArgumentException("Coordinates should be stored as an array of [longitude,latitude]")
             }
+            case _ => throw new IllegalArgumentException("Coordinates should be written as a matrix")
           }
           GeoCluster(id, points)
         }
+        case _ => throw new IllegalArgumentException("Features should contain coordinates")
       }
       GeoShape(clusters)
     }
   }
 
   /**
-   * A serializable singleton object to efficiently get an [[com.uber.h3core.H3Core]] instance across multiple workers
+   * A serializable singleton object to efficiently get an H3Core instance across multiple workers
    */
   object H3 extends Serializable {
     @transient lazy val instance: H3Core = H3Core.newInstance();

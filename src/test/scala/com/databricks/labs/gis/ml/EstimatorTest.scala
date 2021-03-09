@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Databricks, Inc.
+ * Copyright 2021 Databricks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import java.nio.file.Files
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class EstimatorTest extends FlatSpec with Matchers {
+class EstimatorTest extends AnyFlatSpec with Matchers {
 
   val tempDir: File = Files.createTempDirectory("geoscan").toFile
   val modelDir: File = new File(tempDir, "pipeline")

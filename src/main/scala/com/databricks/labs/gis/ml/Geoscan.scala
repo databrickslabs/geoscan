@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Databricks, Inc.
+ * Copyright 2021 Databricks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.databricks.labs.gis.ml
 
-import org.apache.http.annotation.Experimental
 import org.apache.spark.graphx.{Edge, Graph}
 import org.apache.spark.ml.Estimator
 import org.apache.spark.ml.param.ParamMap
@@ -25,11 +24,10 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
- * Following the [[org.apache.spark.ml.Estimator]] interface of Spark ML, we embed our GEOSCAN logic as a pipeline object
+ * Following the Estimator interface of Spark ML, we embed our GEOSCAN logic as a pipeline object
  * This enables both parameters and model serialization / deserialization using Writable and Readable interfaces
  * @param uid is automatically created by Spark ML framework
  */
-@Experimental
 class Geoscan(override val uid: String) extends Estimator[GeoscanModel] with DefaultParamsWritable with GeoscanParams {
 
   override def copy(extra: ParamMap): Estimator[GeoscanModel] = defaultCopy(extra)
@@ -141,7 +139,7 @@ class Geoscan(override val uid: String) extends Estimator[GeoscanModel] with Def
 
 /**
  * We create our Estimator companion object
- * By extending [[org.apache.spark.ml.util.DefaultParamsReadable]] we allow serialization / deserialization of our parameters
+ * By extending DefaultParamsReadable we allow serialization / deserialization of our parameters
  */
 object Geoscan extends DefaultParamsReadable[Geoscan] {
   override def load(path: String): Geoscan = super.load(path)

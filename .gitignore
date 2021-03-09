@@ -2,4 +2,6 @@
 .bsp
 .idea
 target
-nyc_shapes.csv
+target/nyc_shapes.csv
+.DS_STORE
+dependency-reduced-pom.xml

@@ -178,13 +178,13 @@ We do welcome contribution though.
 
 ### Installation
 
-Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x)
+Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shade` profile to include GEOSCAN dependencies as an assembly jar 
 
 ```shell
-sbt clean assembly
+mvn clean package -Pshade
 ```
 
-For python wrapper, install the dependencies locally using the magig `%pip` command
+For python wrapper, install the dependencies locally using the magic `%pip` command. Longer term, this wrapper will be available as a `pypi` dependency.
 
 ```shell script
 %pip install /path/to/geoscan/python
@@ -192,17 +192,40 @@ For python wrapper, install the dependencies locally using the magig `%pip` comm
 
 ### Dependencies
 
-```sbt
-val sparkVersion = "3.1.0"
+We only use 2 external dependencies in addition to the standard Spark stack. As mentioned, H3 is used extensively to group latitude and longitude in order to beat the `O(n2)` complexity.
+`scala-graph` is used in our pseudo distributed mode when training in-memory clusters (in lieu of GraphX).
 
-libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
-  "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
-  "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
-  "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
-  "com.uber" % "h3" % "3.6.3",
-  "org.scala-graph" %% "graph-core" % "1.12.5"
-)
+```xml
+<dependency>
+    <groupId>com.uber</groupId>
+    <artifactId>h3</artifactId>
+    <version>3.6.3</version>
+</dependency>
+<dependency>
+    <groupId>org.scala-graph</groupId>
+    <artifactId>graph-core_2.12</artifactId>
+    <version>1.12.5</version>
+</dependency>
+```
+
+### Release process
+
+Once a change is approved, peer reviewed and merged back to `master` branch, a GEOSCAN admin will be able to promote 
+a new version to maven central as follows (provided tests validated by our CI/CD pipeline).
+
+```shell script
+mvn release:prepare
+mvn release:perform
+```
+
+This will create a new version on maven central
+b
+```xml
+<dependency>
+    <groupId>com.databricks.labs</groupId>
+    <artifactId>geoscan</artifactId>
+    <version>1.0</version>
+</dependency>
 ```
 
 ### Project support

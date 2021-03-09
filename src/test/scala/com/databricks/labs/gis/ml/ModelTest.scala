@@ -21,11 +21,12 @@ import java.nio.file.Files
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
 
-class ModelTest extends FlatSpec with Matchers {
+class ModelTest extends AnyFlatSpec with Matchers {
 
   val tempDir: File = Files.createTempDirectory("geoscan").toFile
   val modelDir: File = new File(tempDir, "model")
@@ -35,7 +36,7 @@ class ModelTest extends FlatSpec with Matchers {
   val minPts = 3
   val text: Seq[String] = Source.fromInputStream(this.getClass.getResourceAsStream("/nyc.csv")).getLines().toList
 
-  "A Dataframe of London data points" should "be grouped into 144 concave clusters" in {
+  "A Dataframe of NYC data points" should "be grouped into 144 concave clusters" in {
 
     Logger.getLogger("akka").setLevel(Level.OFF)
     Logger.getLogger("org").setLevel(Level.OFF)
@@ -85,7 +86,7 @@ class ModelTest extends FlatSpec with Matchers {
 
   }
 
-  "A grouped Dataframe of London data points" should "be executed in parallel" in {
+  "A grouped Dataframe of NYC data points" should "be executed in parallel" in {
 
     Logger.getLogger("akka").setLevel(Level.OFF)
     Logger.getLogger("org").setLevel(Level.OFF)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Databricks, Inc.
+ * Copyright 2021 Databricks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.apache.spark.ml.param.{IntParam, Param, ParamValidators, Params}
 import org.apache.spark.sql.types._
 
 /**
- * Creating models in Spark requires extending an interface that is common between [[org.apache.spark.ml.Estimator]] and [[org.apache.spark.ml.Model]]
+ * Creating models in Spark requires extending an interface that is common between Estimator and Model
  * This interface indicates all parameters to read, save and set
  */
 trait GeoscanParams extends Params {

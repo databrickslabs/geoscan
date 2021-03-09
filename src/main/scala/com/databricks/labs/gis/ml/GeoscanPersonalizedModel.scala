@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Databricks, Inc.
+ * Copyright 2021 Databricks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ class GeoscanPersonalizedModel(override val uid: String, shapes: DataFrame) exte
 
   /**
    * We create our own class to persist both data and metadata of our model
-   * @return an instance of [[org.apache.spark.ml.util.MLWriter]] interface
+   * @return an instance of MLWriter interface
    */
   override def write: MLWriter = {
     new GeoscanPersonalizedModel.GeoscanPersonalizedModelWriter(this)
@@ -108,18 +108,18 @@ class GeoscanPersonalizedModel(override val uid: String, shapes: DataFrame) exte
 
 /**
  * One of the annoying things in Spark is the fact that most of useful method are private and / or package restricted.
- * In order to save both data and metadata, we have to implement our own [[org.apache.spark.ml.util.MLReader]] interface
+ * In order to save both data and metadata, we have to implement our own MLReader interface
  */
 object GeoscanPersonalizedModel extends MLReadable[GeoscanPersonalizedModel] {
 
   /**
-   * We tell Spark framework how to deserializa our model using our implementation of [[org.apache.spark.ml.util.MLReader]] interface
-   * @return an [[org.apache.spark.ml.util.MLReader]] interface
+   * We tell Spark framework how to deserializa our model using our implementation of MLReader interface
+   * @return an MLReader interface
    */
   override def read: MLReader[GeoscanPersonalizedModel] = new GeoscanPersonalizedModelReader()
 
   /**
-   * We tell Spark framework how to serializa our model using our implementation of [[org.apache.spark.ml.util.MLWriter]] interface
+   * We tell Spark framework how to serializa our model using our implementation of MLWriter interface
    * This consists in saving metadata as JSON and data as TSV
    * @param instance the model to save
    */
@@ -142,7 +142,7 @@ object GeoscanPersonalizedModel extends MLReadable[GeoscanPersonalizedModel] {
 
   class GeoscanPersonalizedModelReader extends MLReader[GeoscanPersonalizedModel] {
     /**
-     * We tell Spark framework how to deserialize our model using our implementation of [[org.apache.spark.ml.util.MLReader]] interface
+     * We tell Spark framework how to deserialize our model using our implementation of MLReader interface
      * @param path where to load model from
      * @return a configured instance of our [[GeoscanPersonalizedModel]]
      */
