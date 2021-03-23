@@ -192,94 +192,6 @@
                 </executions>
             </plugin>
 
-            <!-- PYTHON BUILD LOGIC -->
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <execution>
-                        <!-- Install python dependencies -->
-                        <id>python-prepare</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>pip</executable>
-                            <workingDirectory>${project.basedir}/python</workingDirectory>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>-r</argument>
-                                <argument>requirements.txt</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <!-- Create a python wheel file -->
-                        <id>python-build</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <environmentVariables>
-                                <ARTIFACT>${project.artifactId}</ARTIFACT>
-                                <VERSION>${project.version}</VERSION>
-                            </environmentVariables>
-                            <executable>python</executable>
-                            <workingDirectory>${project.basedir}/python</workingDirectory>
-                            <arguments>
-                                <argument>setup.py</argument>
-                                <argument>bdist_wheel</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <!-- Move python wheel file to target -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <copy todir="${basedir}/target/python">
-                                    <fileset dir="${project.basedir}/python/dist" includes="**/*" />
-                                </copy>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <!-- Clean up python dist -->
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>python/</directory>
-                            <includes>
-                                <include>build/**</include>
-                                <include>dist/**</include>
-                                <include>*.egg-info/**</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-
             <!-- RELEASE LOGIC -->
 
             <plugin>
@@ -385,6 +297,30 @@
                         <version>1.6.0</version>
                         <executions>
                             <execution>
+                                <!-- Install python dependencies -->
+                                <id>python-prepare</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>pip</executable>
+                                    <workingDirectory>${project.basedir}/python</workingDirectory>
+                                    <arguments>
+                                        <argument>install</argument>
+                                        <argument>-r</argument>
+                                        <argument>requirements.txt</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
                                 <!-- Python Tests can only run with a shaded jar -->
                                 <id>python-test</id>
                                 <!-- Test can only run after jar was packaged -->
@@ -398,9 +334,10 @@
                                         <ARTIFACT>${project.artifactId}</ARTIFACT>
                                         <VERSION>${project.version}</VERSION>
                                     </environmentVariables>
-                                    <executable>python</executable>
+                                    <executable>coverage</executable>
                                     <workingDirectory>${project.basedir}/python</workingDirectory>
                                     <arguments>
+                                        <argument>run</argument>
                                         <argument>-m</argument>
                                         <argument>unittest</argument>
                                         <argument>tests/tests.py</argument>

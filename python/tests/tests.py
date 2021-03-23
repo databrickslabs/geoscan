@@ -32,7 +32,6 @@ class GeoscanTest(unittest.TestCase):
 
     def test_signature(self):
 
-        print("Testing GEOSCAN signature")
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
             Geoscan().setMinPts("HELLO")
@@ -53,7 +52,6 @@ class GeoscanTest(unittest.TestCase):
             Geoscan().setPredictionCol("amount").fit(geo_df)
 
     def test_dataframe(self):
-        print("Testing GEOSCAN dataframe")
         geo_pdf = pd.read_csv('data/nyc.csv', names=['latitude', 'longitude', 'amount', 'user']).head(500)
         geo_df = self.spark.createDataFrame(geo_pdf)
         model = Geoscan().setLatitudeCol("latitude").setLongitudeCol("longitude").setPredictionCol("cluster").setEpsilon(100).setMinPts(3).fit(geo_df)
@@ -62,7 +60,6 @@ class GeoscanTest(unittest.TestCase):
         self.assertEqual(2, num_clusters)
 
     def test_personalized(self):
-        print("Testing Personalized GEOSCAN dataframe")
         geo_pdf = pd.read_csv('data/nyc.csv', names=['latitude', 'longitude', 'amount', 'user']).head(500)
         users = geo_pdf['user'].unique().shape[0]
         geo_df = self.spark.createDataFrame(geo_pdf)

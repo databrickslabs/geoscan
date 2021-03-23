@@ -181,7 +181,7 @@ We do welcome contribution though.
 Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shade` profile to include GEOSCAN dependencies as an assembly jar 
 
 ```shell
-mvn clean package -Pshade
+mvn clean package -Pshaded
 ```
 
 For python wrapper, install the dependencies locally using the magic `%pip` command. Longer term, this wrapper will be available as a `pypi` dependency.
@@ -207,25 +207,6 @@ We only use 2 external dependencies in addition to the standard Spark stack. As 
     <artifactId>graph-core_2.12</artifactId>
     <version>1.12.5</version>
 </dependency>
-```
-
-### Test and package
-
-```shell script
-mvn clean package
-```
-
-This will run standard unit tests (scala only), compile code as standalone jar and create a python wrapper in `target/python`
-
-```shell script
-mvn clean package -Pshaded
-```
-
-This will run all tests, create a jar file **with dependencies** (useful for testing purpose), test python module (can only be tested with a uber jar)
-and create a python wrapper in `target/python`
-
-```shell script
-pip install target/python/geoscan-1.0-py3-none-any.whl
 ```
 
 ### Release process

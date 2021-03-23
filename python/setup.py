@@ -1,10 +1,9 @@
 import setuptools
 from setuptools import find_packages
-import os
 
 setuptools.setup(
-    name=os.getenv('ARTIFACT'),
-    version=os.getenv('VERSION').split('-')[0], # python does not like SNAPSHOT in version
+    name='geoscan',
+    version='1.0',
     author='Antoine Amend',
     author_email='antoine.amend@databricks.com',
     description='Geoclustering using H3 hexagons',
