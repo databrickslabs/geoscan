@@ -58,7 +58,6 @@ class GeoscanTest(unittest.TestCase):
         geo_df = self.spark.createDataFrame(geo_pdf)
         model = Geoscan().setLatitudeCol("latitude").setLongitudeCol("longitude").setPredictionCol("cluster").setEpsilon(100).setMinPts(3).fit(geo_df)
         geojson = model.toGeoJson()
-        print(geojson)
         num_clusters = len(json.loads(geojson))
         self.assertEqual(2, num_clusters)
 

@@ -224,6 +224,10 @@ mvn clean package -Pshaded
 This will run all tests, create a jar file **with dependencies** (useful for testing purpose), test python module (can only be tested with a uber jar)
 and create a python wrapper in `target/python`
 
+```shell script
+pip install target/python/geoscan-1.0-py3-none-any.whl
+```
+
 ### Release process
 
 Once a change is approved, peer reviewed and merged back to `master` branch, a GEOSCAN admin will be able to promote 
