@@ -5,3 +5,6 @@ target
 target/nyc_shapes.csv
 .DS_STORE
 dependency-reduced-pom.xml
+build
+dist
+geoscan.egg-info

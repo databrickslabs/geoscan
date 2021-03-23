@@ -201,12 +201,28 @@ We only use 2 external dependencies in addition to the standard Spark stack. As 
     <artifactId>h3</artifactId>
     <version>3.6.3</version>
 </dependency>
+
 <dependency>
     <groupId>org.scala-graph</groupId>
     <artifactId>graph-core_2.12</artifactId>
     <version>1.12.5</version>
 </dependency>
 ```
+
+### Test and package
+
+```shell script
+mvn clean package
+```
+
+This will run standard unit tests (scala only), compile code as standalone jar and create a python wrapper in `target/python`
+
+```shell script
+mvn clean package -Pshaded
+```
+
+This will run all tests, create a jar file **with dependencies** (useful for testing purpose), test python module (can only be tested with a uber jar)
+and create a python wrapper in `target/python`
 
 ### Release process
 
@@ -219,7 +235,7 @@ mvn release:perform
 ```
 
 This will create a new version on maven central
-b
+
 ```xml
 <dependency>
     <groupId>com.databricks.labs</groupId>
