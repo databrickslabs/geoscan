@@ -181,7 +181,7 @@ We do welcome contribution though.
 Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shade` profile to include GEOSCAN dependencies as an assembly jar 
 
 ```shell
-mvn clean package -Pshade
+mvn clean package -Pshaded
 ```
 
 For python wrapper, install the dependencies locally using the magic `%pip` command. Longer term, this wrapper will be available as a `pypi` dependency.
@@ -201,6 +201,7 @@ We only use 2 external dependencies in addition to the standard Spark stack. As 
     <artifactId>h3</artifactId>
     <version>3.6.3</version>
 </dependency>
+
 <dependency>
     <groupId>org.scala-graph</groupId>
     <artifactId>graph-core_2.12</artifactId>
@@ -219,7 +220,7 @@ mvn release:perform
 ```
 
 This will create a new version on maven central
-b
+
 ```xml
 <dependency>
     <groupId>com.databricks.labs</groupId>
