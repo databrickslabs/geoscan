@@ -1,6 +1,6 @@
 # Geoscan
 
-![geoscan](images/geoscan.png)
+![geoscan](images/geoscan_preview.png)
 
 [DBSCAN](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) (density-based spatial clustering of applications with noise) 
 is a clustering technique used to group points that are closely packed together. Compared to other clustering methodologies, 
