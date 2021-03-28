@@ -9,3 +9,4 @@ build
 dist
 geoscan.egg-info
 .coverage
+__pycache__
