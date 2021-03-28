@@ -150,7 +150,7 @@ As reported in below picture, we first map a point to an H3 polygon and draw a c
 Therefore, 2 points being at a distance of `epsilon` away would be sharing at least 1 polygon in common, so grouping by polygon would group points in
 close vicinity, ignoring 99.99% of the dataset. These pairs can then be further measured using a [haversine](https://en.wikipedia.org/wiki/Haversine_formula) distance.
 
-![binning](images/grouping_h3.png)
+![binning](images/geoscan.png)
 
 Even though the theoretical time complexity remains the same (`O(n^2)`), we did not have to run an expensive (and non realistic) cartesian product
 of our entire dataframe. The real time complexity is `O(p.k^2)` where `p` groups are processed in parallel, running cartesian product of `k` points (`k << n`) sharing a same H3 hexagon, hence scaling massively. This isn't magic though, and prone to failure when data is heavily skewed to dense area, so understand your data is key before running this job as-is. With heavy skewed, it would be recommended to sample the data for specific polygons. Furthermore, we first had to explode our dataset X-fold to cover points against multiple polygons, but an extra complexity upfront makes the grouping much faster. 
@@ -178,7 +178,7 @@ We do welcome contribution though.
 
 ### Installation
 
-Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shade` profile to include GEOSCAN dependencies as an assembly jar 
+Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shaded` profile to include GEOSCAN dependencies as an assembly jar and unit test python wrapper
 
 ```shell
 mvn clean package -Pshaded
