@@ -184,10 +184,20 @@ Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DB
 mvn clean package -Pshaded
 ```
 
+Alternatively (preferred), install dependency from maven central
+
+```xml
+<dependency>
+    <groupId>com.databricks.labs</groupId>
+    <artifactId>geoscan</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
 For python wrapper, install the dependencies locally using the magic `%pip` command. Longer term, this wrapper will be available as a `pypi` dependency.
 
 ```shell script
-%pip install /path/to/geoscan/python
+%pip install git+https://github.com/databrickslabs/geoscan.git#subdirectory=python
 ```
 
 ### Dependencies
@@ -217,16 +227,6 @@ a new version to maven central as follows (provided tests validated by our CI/CD
 ```shell script
 mvn release:prepare
 mvn release:perform
-```
-
-This will create a new version on maven central
-
-```xml
-<dependency>
-    <groupId>com.databricks.labs</groupId>
-    <artifactId>geoscan</artifactId>
-    <version>1.0</version>
-</dependency>
 ```
 
 ### Project support
