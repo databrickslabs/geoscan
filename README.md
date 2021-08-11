@@ -2,7 +2,7 @@
 
 ![geoscan](images/geoscan_preview.png)
 
-[![codecov](https://codecov.io/gh/databrickslabs/geoscan/branch/master/graph/badge.svg?token=0UKFCOO9OM)](https://codecov.io/gh/databrickslabs/geoscan)
+[![build](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml/badge.svg)](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml) [![codecov](https://codecov.io/gh/databrickslabs/geoscan/branch/master/graph/badge.svg?token=0UKFCOO9OM)](https://codecov.io/gh/databrickslabs/geoscan)
 
 [DBSCAN](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) (density-based spatial clustering of applications with noise) 
 is a clustering technique used to group points that are closely packed together. Compared to other clustering methodologies, 
