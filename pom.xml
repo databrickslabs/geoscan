@@ -109,7 +109,7 @@
         <dependency>
             <groupId>org.scala-graph</groupId>
             <artifactId>graph-core_${scala.binary.version}</artifactId>
-            <version>1.12.5</version>
+            <version>1.13.1</version>
         </dependency>
         <!--TEST DEPENDENCIES (test)-->
         <dependency>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
