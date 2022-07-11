@@ -16,8 +16,8 @@ jobs:
       - name: Unshallow
         run: git fetch --prune --unshallow
 
-      - name: Test stuff
-        run: mvn test
+      - name: Compile and test
+        run: mvn package -Pshaded
 
       - name: Publish test coverage
         uses: codecov/codecov-action@v1

@@ -55,10 +55,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.12.14</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>1.8</java.version>
+        <json.version>3.7.0-M11</json.version>
     </properties>
 
     <dependencies>
@@ -98,6 +99,30 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-mllib_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-ast_${scala.binary.version}</artifactId>
+            <version>${json.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-core_${scala.binary.version}</artifactId>
+            <version>${json.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-jackson_${scala.binary.version}</artifactId>
+            <version>${json.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-scalap_${scala.binary.version}</artifactId>
+            <version>${json.version}</version>
             <scope>provided</scope>
         </dependency>
         <!--USER DEPENDENCIES-->

@@ -1,3 +1,5 @@
 py4j==0.10.9.5
 pyspark==3.2.1
 coverage==6.4.1
+wheel==0.37.1
+semver==2.13.0
