@@ -2,8 +2,6 @@
 .bsp
 .idea
 target
-target/nyc_shapes.csv
-.DS_STORE
 .DS_Store
 dependency-reduced-pom.xml
 build

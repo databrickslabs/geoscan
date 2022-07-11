@@ -332,61 +332,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <!-- Install python dependencies -->
-                                <id>python-prepare</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>pip</executable>
-                                    <workingDirectory>${project.basedir}/python</workingDirectory>
-                                    <arguments>
-                                        <argument>install</argument>
-                                        <argument>-r</argument>
-                                        <argument>requirements.txt</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <!-- Python Tests can only run with a shaded jar -->
-                                <id>python-test</id>
-                                <!-- Test can only run after jar was packaged -->
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <environmentVariables>
-                                        <TARGET_DIR>${project.build.directory}</TARGET_DIR>
-                                        <ARTIFACT>${project.artifactId}</ARTIFACT>
-                                        <VERSION>${project.version}</VERSION>
-                                    </environmentVariables>
-                                    <executable>coverage</executable>
-                                    <workingDirectory>${project.basedir}/python</workingDirectory>
-                                    <arguments>
-                                        <argument>run</argument>
-                                        <argument>-m</argument>
-                                        <argument>unittest</argument>
-                                        <argument>tests/tests.py</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>

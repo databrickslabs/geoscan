@@ -4,25 +4,28 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.utils import IllegalArgumentException
 import pandas as pd
-import glob, os
-from geoscan import Geoscan, GeoscanModel
-from geoscan import GeoscanPersonalized, GeoscanPersonalizedModel
+from geoscan.geoscan import *
 import json
+from pathlib import Path
+import glob
+
 
 class GeoscanTest(unittest.TestCase):
 
     def setUp(self):
 
         # this test will only work after a mvn package shaded as UBER jar
-        jar_file = "{}/{}-{}.jar".format(
-            os.getenv('TARGET_DIR'),
-            os.getenv('ARTIFACT'),
-            os.getenv('VERSION'))
+        path = Path(".")
+        target_dir = Path(path.parent.absolute().parent.absolute(), "target")
+        target_jar = glob.glob(str(target_dir) + '/*.jar')
+        target_jar = ':'.join(target_jar)
+        self.target_jar = target_jar
+        print(target_jar)
 
         # inject scala classes
         self.spark = (
             SparkSession.builder.appName("GEOSCAN")
-                .config("spark.driver.extraClassPath", jar_file)
+                .config("spark.driver.extraClassPath", target_jar)
                 .master("local")
                 .getOrCreate()
         )
@@ -32,6 +35,7 @@ class GeoscanTest(unittest.TestCase):
 
     def test_signature(self):
 
+        print(self.target_jar)
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
             Geoscan().setMinPts("HELLO")
