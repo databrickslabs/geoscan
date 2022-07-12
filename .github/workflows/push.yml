@@ -1,43 +1,21 @@
-name: build
+name: Geoscan Test
 
-on:
-  pull_request:
-    types: [opened, synchronize]
-  push:
-    branches: ['*']
+on: [push, pull_request]
 
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
-
-      - name: Compile scala
-        run: mvn package -Pshaded -Dmaven.test.skip=true
-
-      - name: Setup Python
-        uses: actions/setup-python@master
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
-          python-version: 3.9
+          java-version: 11
 
-      - name: Set Spark env
-        run: |
-          export SPARK_LOCAL_IP=127.0.0.1
-          export SPARK_SUBMIT_OPTS="--illegal-access=permit -Dio.netty.tryReflectionSetAccessible=true"
+      - name: Print out mvn version
+        run: mvn -v
 
-      - name: Test scala
-        run: mvn test
-
-      - name: Test python
-        working-directory: ./python
-        run: |
-          pip install -r requirements.txt
-          pip install coverage
-          coverage run -m unittest discover -s tests -p 'tests_*.py'
-
-      - name: Publish test coverage
-        uses: codecov/codecov-action@v1
+      - name: Build + Test
+        run: mvn clean test

@@ -1,41 +1,34 @@
 import unittest
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import *
 from pyspark.sql.utils import IllegalArgumentException
 import pandas as pd
 from geoscan.geoscan import *
 import json
 from pathlib import Path
-import glob
+import os
 
 
 class GeoscanTest(unittest.TestCase):
 
     def setUp(self):
 
-        # this test will only work after a mvn package shaded as UBER jar
-        path = Path(".")
-        target_dir = Path(path.parent.absolute().parent.absolute(), "target")
-        target_jar = glob.glob(str(target_dir) + '/*.jar')
-        target_jar = ':'.join(target_jar)
-        self.target_jar = target_jar
-        print(target_jar)
+        # retrieve all jar files required for test
+        path = Path(os.getcwd())
+        dep_path = os.path.join(path, 'dist', 'dependencies')
+        dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
 
         # inject scala classes
-        self.spark = (
-            SparkSession.builder.appName("GEOSCAN")
-                .config("spark.driver.extraClassPath", target_jar)
-                .master("local")
-                .getOrCreate()
-        )
+        self.spark = SparkSession.builder.appName("legend-delta") \
+            .config("spark.driver.extraClassPath", ':'.join(dep_file)) \
+            .master("local") \
+            .getOrCreate()
 
     def tearDown(self) -> None:
         self.spark.stop()
 
     def test_signature(self):
 
-        print(self.target_jar)
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
             Geoscan().setMinPts("HELLO")
@@ -72,6 +65,6 @@ class GeoscanTest(unittest.TestCase):
         geojson.show()
         self.assertEqual(users, geojson.count())
 
-## MAIN
+
 if __name__ == '__main__':
     unittest.main()

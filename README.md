@@ -1,21 +1,21 @@
 # Geoscan
 
-![geoscan](images/geoscan_preview.png)
+[![build](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml/badge.svg?style=for-the-badge)](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml) 
+[![codecov](https://codecov.io/gh/databrickslabs/geoscan/branch/master/graph/badge.svg?token=0UKFCOO9OM&style=for-the-badge)](https://codecov.io/gh/databrickslabs/geoscan)
 
-[![build](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml/badge.svg)](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml) [![codecov](https://codecov.io/gh/databrickslabs/geoscan/branch/master/graph/badge.svg?token=0UKFCOO9OM)](https://codecov.io/gh/databrickslabs/geoscan)
-
-[DBSCAN](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) (density-based spatial clustering of applications with noise) 
-is a clustering technique used to group points that are closely packed together. Compared to other clustering methodologies, 
-it doesn't require you to indicate the number of clusters beforehand, can detect clusters of varying shapes and sizes 
-and is strong at finding outliers that don't belong to any cluster, hence a great candidate for geospatial analysis of card 
-transactions and fraud detection. This, however, comes with a serious price tag: DBSCAN requires all points to be compared 
-to every other points in order to find dense neighborhoods where at least `minPts` points can be found within a `epsilon` radius. 
+*DBSCAN (density-based spatial clustering of applications with noise) is a clustering technique used to group points that
+are closely packed together. Compared to other clustering methodologies, it doesn't require you to indicate the number
+of clusters beforehand, can detect clusters of varying shapes and sizes and is strong at finding outliers that don't
+belong to any cluster, hence a great candidate for geospatial analysis of card transactions and fraud detection.
+This, however, comes with a serious price tag: DBSCAN requires all points to be compared
+to every other points in order to find dense neighborhoods where at least `minPts` points can be found within a
+`epsilon` radius.* 
 
 Here comes **GEOSCAN**, our novel approach to DBSCAN algorithm for geospatial clustering, 
-leveraging uber [H3](https://eng.uber.com/h3/) library to only group points we know are in close vicinity (according to H3 precision) 
-and relying on [GraphX](https://spark.apache.org/docs/latest/graphx-programming-guide.html) to detect dense areas at massive scale. 
-With such a framework, Financial services institutions can better understand user shopping behaviours and detect anomalous 
-transactions in real time.
+leveraging uber [H3](https://eng.uber.com/h3/) library to only group points we know are in close vicinity (according 
+to H3 precision) and relying on [GraphX](https://spark.apache.org/docs/latest/graphx-programming-guide.html) to detect 
+dense areas at massive scale. With such a framework, Financial services institutions can better understand user 
+shopping behaviours and detect anomalous transactions in real time.
 
 ### Usage
 
@@ -71,13 +71,13 @@ model.save('/tmp/geoscan_model/distributed')
 model = GeoscanModel.load('/tmp/geoscan_model/distributed')
 ```
 
-Model can always be returned as a GeoJson object direclty
+Model can always be returned as a GeoJson object directly
 
 ```python
 model.toGeoJson()
 ```
 
-Finally, it may be useful to extract clusters as a series of H3 tiles that could be used outside of a spark environmnent or outside of GEOSCAN library.
+Finally, it may be useful to extract clusters as a series of H3 tiles that could be used outside a spark environment or outside GEOSCAN library.
 We expose a `getTiles` method that fills all our polygons with H3 tiles of a given dimension, allowing shapes to spill over additional layers should
 we want to also "capture" neighbours points.
 
@@ -88,8 +88,7 @@ model.getTiles(precision, additional_layers)
 This process can be summarized with below picture. Note that although a higher granularity would
 fit a polygon better, the number of tiles it generates will grow exponentially.
 
-![tiling](images/tiling.png)
-
+![tiling](https://raw.githubusercontent.com/databrickslabs/geoscan/master/images/tiling.png)
 
 #### Pseudo Distributed
 
@@ -135,58 +134,20 @@ model.toGeoJson().show()
 ```
 
 Note that standard `transform` and `getTiles` methods also apply in that mode. By tracking how tiles change overtime, 
-this framework can be used to detect user changing behaviour as represented in below animation.
+this framework can be used to detect user changing behaviour as represented in below animation using synthetic data.
 
-![trend](images/geoscan_window.gif)
-
-### Algorithm
-
-In this section, we explain the core logic of our algorithm, and how using H3 helps us beat time complexity of standard [DBSCAN](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) model. 
-There are typically 3 stages in running a DBSCAN model. 
-
-#### Step1: Grouping
-
-The first step is to link each point to all its neighbours within an `epsilon` distance and remove points having less than `minPts` neighbours. 
-Concretely, this means running a cartesian product (`O(n^2)` time complexity) of our dataset to filter out tuples that are more than `epsilon` meters away from one another. In our approach, we leverage H3 hexagons to only group points we know are close enough to be worth comparing. 
-As reported in below picture, we first map a point to an H3 polygon and draw a circle of radius `epsilon` that we tile to at least 1 complete ring. 
-Therefore, 2 points being at a distance of `epsilon` away would be sharing at least 1 polygon in common, so grouping by polygon would group points in
-close vicinity, ignoring 99.99% of the dataset. These pairs can then be further measured using a [haversine](https://en.wikipedia.org/wiki/Haversine_formula) distance.
-
-![binning](images/geoscan.png)
-
-Even though the theoretical time complexity remains the same (`O(n^2)`), we did not have to run an expensive (and non realistic) cartesian product
-of our entire dataframe. The real time complexity is `O(p.k^2)` where `p` groups are processed in parallel, running cartesian product of `k` points (`k << n`) sharing a same H3 hexagon, hence scaling massively. This isn't magic though, and prone to failure when data is heavily skewed to dense area, so understand your data is key before running this job as-is. With heavy skewed, it would be recommended to sample the data for specific polygons. Furthermore, we first had to explode our dataset X-fold to cover points against multiple polygons, but an extra complexity upfront makes the grouping much faster. 
- 
-#### Step2: Clustering
-
-The second step is trivial when using a graph paradigm. As we found the pairs being no more than `epsilon` meters away, we
-simply remove vertices with less than `minPts` connections (`degrees < minPts`). By removing these border nodes, clusters start to form
-and can be retrieved via a `connectedComponents`. 
-
-```scala
-val clusters = graph
-  .outerJoinVertices(graph.degrees)((_, point, deg) => (point, deg.getOrElse(0)))
-  .subgraph(
-    edge => edge.dstAttr.distance(edge.srcAttr) < epsilon, 
-    (vId, vData) => vData._2 >= minPts)
-  .connectedComponents()
-```
-
-#### Step3: Convex Hulls
-
-As all our core points are defining our clusters, the final step is to find the [Convex Hull](https://en.wikipedia.org/wiki/Convex_hull), that is the smallest shape that include all of our points. There are plenty of litterature on that topic, and our approach can easily be used in memory for each cluster returned by our connected components.
-Note that - as much as we do want to support non convex hull - we could not find a method / library to identify concave shapes efficiently. 
-We do welcome contribution though.
+![trend](https://raw.githubusercontent.com/databrickslabs/geoscan/master/images/geoscan_window.gif)
 
 ### Installation
 
-Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 7.x). Activate `shaded` profile to include GEOSCAN dependencies as an assembly jar and unit test python wrapper
+Compile GEOSCAN scala library that can be uploaded onto a Databricks cluster (DBR > 9.1). Activate `shaded` profile 
+to include GEOSCAN dependencies as an assembly jar if needed
 
 ```shell
 mvn clean package -Pshaded
 ```
 
-Alternatively (preferred), install dependency from maven central
+Alternatively (preferred), install dependency from maven central directly in your spark based environment.
 
 ```xml
 <dependency>
@@ -196,40 +157,16 @@ Alternatively (preferred), install dependency from maven central
 </dependency>
 ```
 
-For python wrapper, install the dependencies locally using the magic `%pip` command. Longer term, this wrapper will be available as a `pypi` dependency.
+For python users, install the dependencies from pypi in addition to the above scala dependency.
 
 ```shell script
-%pip install git+https://github.com/databrickslabs/geoscan.git#subdirectory=python
-```
-
-### Dependencies
-
-We only use 2 external dependencies in addition to the standard Spark stack. As mentioned, H3 is used extensively to group latitude and longitude in order to beat the `O(n2)` complexity.
-`scala-graph` is used in our pseudo distributed mode when training in-memory clusters (in lieu of GraphX).
-
-```xml
-<dependency>
-    <groupId>com.uber</groupId>
-    <artifactId>h3</artifactId>
-    <version>3.6.3</version>
-</dependency>
-
-<dependency>
-    <groupId>org.scala-graph</groupId>
-    <artifactId>graph-core_2.12</artifactId>
-    <version>1.12.5</version>
-</dependency>
+pip install geoscan==0.1
 ```
 
 ### Release process
 
-Once a change is approved, peer reviewed and merged back to `master` branch, a GEOSCAN admin will be able to promote 
-a new version to maven central as follows (provided tests validated by our CI/CD pipeline).
-
-```shell script
-mvn release:prepare
-mvn release:perform
-```
+Once a change is approved, peer reviewed and merged back to `master` branch, a project admin will be able to promote 
+a new version to both maven central and pypi repo as a manual github action.
 
 ### Project support
 

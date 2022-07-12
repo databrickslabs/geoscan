@@ -15,9 +15,10 @@
 #
 
 from pyspark.ml.param.shared import *
-from pyspark import since, keyword_only
+from pyspark import keyword_only
 from pyspark.ml.util import JavaMLReadable, JavaMLWritable, MLReader, _jvm
-from pyspark.ml.wrapper import JavaEstimator, JavaModel, JavaTransformer, JavaParams
+from pyspark.ml.wrapper import JavaEstimator, JavaModel, JavaParams
+
 
 class GeoscanMLReader(MLReader):
 
@@ -42,6 +43,7 @@ class GeoscanMLReader(MLReader):
         for name in java_class.split("."):
             java_obj = getattr(java_obj, name)
         return java_obj
+
 
 class _GeoscanParams:
 
@@ -98,6 +100,7 @@ class _GeoscanParams:
     def getGroupedCol(self):
         return self.getOrDefault(self.groupedCol)
 
+
 class Geoscan(JavaEstimator, _GeoscanParams, JavaMLReadable, JavaMLWritable):
 
     _classpath = 'com.databricks.labs.gis.ml.Geoscan'
@@ -144,6 +147,7 @@ class Geoscan(JavaEstimator, _GeoscanParams, JavaMLReadable, JavaMLWritable):
 
     def _create_model(self, java_model):
         return GeoscanModel(java_model)
+
 
 class GeoscanPersonalized(JavaEstimator, _GeoscanParams, JavaMLReadable, JavaMLWritable):
 
@@ -197,6 +201,7 @@ class GeoscanPersonalized(JavaEstimator, _GeoscanParams, JavaMLReadable, JavaMLW
     def _create_model(self, java_model):
         return GeoscanPersonalizedModel(java_model)
 
+
 class GeoscanModel(JavaModel, _GeoscanParams, JavaMLReadable, JavaMLWritable):
 
     _classpath_model = 'com.databricks.labs.gis.ml.GeoscanModel'
@@ -235,6 +240,7 @@ class GeoscanModel(JavaModel, _GeoscanParams, JavaMLReadable, JavaMLWritable):
     @classmethod
     def read(cls):
         return GeoscanMLReader(cls, cls._classpath_model)
+
 
 class GeoscanPersonalizedModel(JavaModel, _GeoscanParams, JavaMLReadable, JavaMLWritable):
 
