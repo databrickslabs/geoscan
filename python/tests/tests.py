@@ -17,10 +17,12 @@ class GeoscanTest(unittest.TestCase):
         path = Path(os.getcwd())
         dep_path = os.path.join(path, 'dist', 'dependencies')
         dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
+        spark_conf = ':'.join(dep_file)
+        self.spark_conf = spark_conf
 
         # inject scala classes
         self.spark = SparkSession.builder.appName("geoscan") \
-            .config("spark.driver.extraClassPath", ':'.join(dep_file)) \
+            .config("spark.driver.extraClassPath", spark_conf) \
             .master("local") \
             .getOrCreate()
 
@@ -28,6 +30,9 @@ class GeoscanTest(unittest.TestCase):
         self.spark.stop()
 
     def test_signature(self):
+
+        print("SPARK CONFIGURATION")
+        print(spark_conf)
 
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
