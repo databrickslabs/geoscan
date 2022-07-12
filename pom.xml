@@ -233,7 +233,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
@@ -255,7 +255,7 @@
                 <executions>
                     <execution>
                         <id>copy-files-on-build</id>
-                        <phase>package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
