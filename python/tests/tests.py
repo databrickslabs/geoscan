@@ -19,7 +19,7 @@ class GeoscanTest(unittest.TestCase):
         dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
 
         # inject scala classes
-        self.spark = SparkSession.builder.appName("legend-delta") \
+        self.spark = SparkSession.builder.appName("geoscan") \
             .config("spark.driver.extraClassPath", ':'.join(dep_file)) \
             .master("local") \
             .getOrCreate()
