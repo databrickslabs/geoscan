@@ -1,4 +1,5 @@
 pyspark==3.2.1
+pandas==1.4.3
 coverage==6.4.1
 wheel==0.37.1
 semver==2.13.0
