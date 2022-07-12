@@ -41,7 +41,7 @@ class ModelTest extends AnyFlatSpec with Matchers {
     Logger.getLogger("akka").setLevel(Level.OFF)
     Logger.getLogger("org").setLevel(Level.OFF)
 
-    val spark = SparkSession.builder().master("local[1]").appName("geoscan").getOrCreate()
+    val spark = SparkSession.builder().master("local[*]").appName("geoscan").getOrCreate()
     import spark.implicits._
 
     val points = text.map(s => {
@@ -91,7 +91,7 @@ class ModelTest extends AnyFlatSpec with Matchers {
     Logger.getLogger("akka").setLevel(Level.OFF)
     Logger.getLogger("org").setLevel(Level.OFF)
 
-    val spark = SparkSession.builder().master("local[1]").appName("geoscan").getOrCreate()
+    val spark = SparkSession.builder().master("local[*]").appName("geoscan").getOrCreate()
     import spark.implicits._
 
     val points = text.map(s => {
@@ -123,8 +123,6 @@ class ModelTest extends AnyFlatSpec with Matchers {
 
     // Ensure data was correctly serialized
     retrieved.transform(points).show()
-    val users = points.rdd.map(_.getAs[String]("user")).collect().toSet
-    retrieved.transform(points).rdd.map(_.getAs[String]("user")).collect().toSet should be(users)
 
   }
 
