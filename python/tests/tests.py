@@ -32,7 +32,7 @@ class GeoscanTest(unittest.TestCase):
     def test_signature(self):
 
         print("SPARK CONFIGURATION")
-        print(spark_conf)
+        print(self.spark_conf)
 
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
