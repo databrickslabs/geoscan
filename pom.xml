@@ -233,7 +233,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>test</phase>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
@@ -255,7 +255,7 @@
                 <executions>
                     <execution>
                         <id>copy-files-on-build</id>
-                        <phase>test</phase>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -281,7 +281,7 @@
                 <executions>
                     <execution>
                         <id>python-prepare</id>
-                        <phase>test</phase>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
