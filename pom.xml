@@ -235,7 +235,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/python/dist/dependencies</outputDirectory>
+                            <outputDirectory>${project.basedir}/python/build/dependencies</outputDirectory>
                             <overWriteReleases>true</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
@@ -257,7 +257,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/python/dist/dependencies</outputDirectory>
+                            <outputDirectory>${project.basedir}/python/build/dependencies</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}</directory>

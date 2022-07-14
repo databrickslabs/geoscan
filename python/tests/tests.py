@@ -15,7 +15,7 @@ class GeoscanTest(unittest.TestCase):
 
         # retrieve all jar files required for test
         path = Path(os.getcwd())
-        dep_path = os.path.join(path, 'dist', 'dependencies')
+        dep_path = os.path.join(path, 'build', 'dependencies')
         dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
         spark_conf = ':'.join(dep_file)
         self.spark_conf = spark_conf
