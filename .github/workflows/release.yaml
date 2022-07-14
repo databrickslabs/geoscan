@@ -1,11 +1,7 @@
 name: Geoscan Release
 
 env:
-  LABS_GITHUB_TOKEN: ${{ secrets.LABS_GITHUB_TOKEN }}
-  LABS_DEPLOY_USERNAME: ${{ secrets.LABS_DEPLOY_USERNAME }}
-  LABS_DEPLOY_PASSWORD: ${{ secrets.LABS_DEPLOY_PASSWORD }}
-  LABS_GPG_PRIVATE_KEY: ${{ secrets.LABS_GPG_PRIVATE_KEY }}
-  LABS_GPG_PASSPHRASE: ${{ secrets.LABS_GPG_PASSPHRASE }}
+  LABS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   LABS_PYPI_TOKEN: ${{ secrets.LABS_PYPI_TOKEN }}
   MAVEN_OPTS: -Xmx4g
 
@@ -35,11 +31,7 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
-          server-id: ossrh
-          server-username: LABS_DEPLOY_USERNAME
-          server-password: LABS_DEPLOY_PASSWORD
-          gpg-private-key: LABS_GPG_PRIVATE_KEY
-          gpg-passphrase: LABS_GPG_PASSPHRASE
+          server-id: github
 
       - name: Compute next development version
         run: |
