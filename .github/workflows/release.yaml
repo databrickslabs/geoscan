@@ -1,8 +1,6 @@
 name: Geoscan Release
 
 env:
-  LABS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  LABS_PYPI_TOKEN: ${{ secrets.LABS_PYPI_TOKEN }}
   MAVEN_OPTS: -Xmx4g
 
 on:
@@ -18,8 +16,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        with:
-          token: LABS_GITHUB_TOKEN
 
       - name: Configure git
         run: |
@@ -43,10 +39,10 @@ jobs:
           echo "DEVELOPMENT_VERSION=${developmentVersion}" >> $GITHUB_ENV
 
       - name: Prepare release
-        run: mvn -B -DpreparationGoals=clean release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }} -P release
+        run: mvn -B -DpreparationGoals=clean release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }} -Dmaven.test.skip=true -P release
 
       - name: Perform release
-        run: mvn -B release:perform -P release
+        run: mvn -B release:perform -Dmaven.test.skip=true -P release
 
       - name: Set up Python
         uses: actions/setup-python@v1
@@ -78,5 +74,5 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: LABS_PYPI_TOKEN
+          password: ${{ secrets.LABS_PYPI_TOKEN }}
           packages_dir: dist/
