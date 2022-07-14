@@ -34,7 +34,7 @@ else:
 with open('../README.md', 'r') as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name='geoscan',
     version=build_version,
     author='Antoine Amend',
