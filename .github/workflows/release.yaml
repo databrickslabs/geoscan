@@ -1,4 +1,4 @@
-name: Geoscan Release
+name: Geoscan Maven Release
 
 on:
   workflow_dispatch:
@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-
+        # The first step is obviously to check out the repository
       - name: Checkout project
         uses: actions/checkout@v2
 
-
+        # The next step is to install a JDK and maven environment
+        # A settings.xml file with credentials will be created and stored in that folder
+        # See next step for settings.xml creation
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -24,7 +26,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
-
+        # maven release requires tagging / pushing changes back to code, hence enforcing maven write access to branch
+        # The setup-java action is actually the simplest way to configure maven's settings.xml
+        # server-id: id that matches your server Id in project's pom.xml <scm><connection></scm></connection>
+        # username: is the username that sets up the build
+        # password: is the passed token through $GITHUB_TOKEN
       - name: Set up Maven Central
         uses: actions/setup-java@v2
         with:
@@ -32,13 +38,15 @@ jobs:
           java-version: "11"
           server-id: github
 
-
+        # Because release:prepare actually commit, it’s necessary to configure the user and email
       - name: Configure Git user
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
 
-
+        # We decide to set up releases as manual actions in order to fully control our destiny :)
+        # Given a tag specified as input action, we extract MAJOR.MINOR.PATCH numbers
+        # Tag will become our master RELEASE and incremented for next SNAPSHOT as part of the maven release plugin
       - name: Compute next development version
         run: |
           releaseVersion=${{ github.event.inputs.releaseVersion }}
@@ -48,48 +56,67 @@ jobs:
           developmentVersion="${a[0]}.${a[1]}.${nextPatch}-SNAPSHOT"
           echo "DEVELOPMENT_VERSION=${developmentVersion}" >> $GITHUB_ENV
 
-
-      - name: Prepare release
-        run: mvn -B release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }} -Dmaven.test.skip=true
+        # See more information about maven release plugin, but essentially does the following
+        # - Change the version in the POM from x-SNAPSHOT to a new version
+        # - Transform the SCM information in the POM to include the final destination of the tag
+        # - Commit the modified POM
+        # - Tag the code in the SCM with a version name
+        # - Bump the version in the POM to a new value y-SNAPSHOT
+        # - Commit the modified POM
+        # Plugin will use the credentials found in the generated settings.xml file and the GITHUB_TOKEN env variable
+      - name: Prepare maven release
+        run: mvn -B release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-      - name: Perform release
-        run: mvn -B release:perform -Dmaven.test.skip=true
+        # See more information about maven release plugin, but essentially does the following
+        # - Checkout from an SCM URL with optional tag
+        # - Run the predefined Maven deploy goal
+        # The deploy phase will make use of the GITHUB_TOKEN env variable and the <distributionManagement> on pom.xml
+      - name: Perform maven release
+        run: mvn -B release:perform
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # We test and package our code against python 3.9 distribution
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.9"
 
-#      - name: Set up Python
-#        uses: actions/setup-python@v1
-#        with:
-#          python-version: "3.9"
-#
-#      - name: Cache pip repo
-#        uses: actions/cache@v2
-#        id: cache
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-#            ${{ runner.os }}-pip-
-#
-#      - name: Install pip
-#        run: python -m pip install --upgrade pip
-#
-#      - name: Install dependencies
-#        working-directory: ./python
-#        run: pip install -U -r requirements.txt
-#
-#      - name: Build python dist
-#        working-directory: ./python
-#        run: python setup.py clean bdist_wheel
-#
-#      - name: Publish a Python distribution to PyPI
-#        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          user: __token__
-#          password: ${{ secrets.LABS_PYPI_TOKEN }}
-#          packages_dir: dist/
+        # we create our own pip cache where dependencies from requirements.txt will be stored
+      - name: Configure Python
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            ${{ runner.os }}-pip-
+
+        # Let's install pip and make sure we run against latest version
+      - name: Install pip
+        run: python -m pip install --upgrade pip
+
+        # And install any dependency required for unit testing
+      - name: Install dependencies
+        working-directory: ./python
+        run: pip install -U -r requirements.txt
+
+        # Here comes the crux of our python development. See core logic in our setup.py file
+        # Given a successful maven release, we get the latest tag to date, compute the version
+        # and package our python code against. This ensures that python package X.Y.Z was packaged to
+        # work against scala dependency X.Y.Z. Whilst the former will be available on pypi, the latter is
+        # available on github packages
+      - name: Build python dist
+        working-directory: ./python
+        run: python setup.py clean bdist_wheel
+
+        # with our packaged application, we simply deploy to pypi repo provided our token stored as secret
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.LABS_PYPI_TOKEN }}
+          packages_dir: dist/
