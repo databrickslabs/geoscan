@@ -167,6 +167,7 @@ pip install geoscan==0.1
 
 Once a change is approved, peer reviewed and merged back to `master` branch, a project admin will be able to promote 
 a new version to both maven central and pypi repo as a manual github action.
+See `release.yaml` github action.
 
 ### Project support
 
