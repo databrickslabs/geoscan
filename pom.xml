@@ -6,7 +6,7 @@
     <name>geoscan</name>
     <groupId>com.databricks.labs</groupId>
     <artifactId>geoscan</artifactId>
-    <version>0.2.6</version>
+    <version>0.2.7-SNAPSHOT</version>
 
     <url>https://github.com/databricks/geoscan</url>
     <description>Geospatial clustering at massive scale</description>
@@ -39,7 +39,7 @@
     <scm>
         <url>https://github.com/databrickslabs/geoscan</url>
         <connection>scm:git:https://github.com/databrickslabs/geoscan.git</connection>
-        <tag>geoscan-0.2.6</tag>
+        <tag>geoscan</tag>
     </scm>
 
     <distributionManagement>
