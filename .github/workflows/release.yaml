@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-        # The first step is obviously to check out the repository
+      # The first step is obviously to check out the repository
       - name: Checkout project
         uses: actions/checkout@v2
 
