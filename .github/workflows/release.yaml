@@ -119,4 +119,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.LABS_PYPI_TOKEN }}
-          packages_dir: dist/
+          packages_dir: python/dist/
