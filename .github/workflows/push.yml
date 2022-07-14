@@ -1,21 +1,21 @@
-name: Geoscan Test
-
-on: [push, pull_request]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-
-      - name: Print out mvn version
-        run: mvn -v
-
-      - name: Build + Test
-        run: mvn clean package -Dmaven.test.skip=true
+#name: Geoscan Test
+#
+#on: [push, pull_request]
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
+#
+#      - name: Print out mvn version
+#        run: mvn -v
+#
+#      - name: Build + Test
+#        run: mvn clean package -Dmaven.test.skip=true
