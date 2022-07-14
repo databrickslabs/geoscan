@@ -38,7 +38,7 @@
 
     <scm>
         <url>https://github.com/databrickslabs/geoscan</url>
-        <connection>scm:git:git@github.com:databrickslabs/geoscan.git</connection>
+        <connection>scm:git:https://github.com/databrickslabs/geoscan.git</connection>
         <tag>geoscan</tag>
     </scm>
 
