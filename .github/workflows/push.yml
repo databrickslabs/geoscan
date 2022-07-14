@@ -1,23 +1,21 @@
-name: build
+name: Geoscan Test
 
-on:
-  pull_request:
-    types: [opened, synchronize]
-  push:
-    branches: [master]
+on: [push, pull_request]
 
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
 
-      - name: Test stuff
-        run: mvn test
+      - name: Print out mvn version
+        run: mvn -v
 
-      - name: Publish test coverage
-        uses: codecov/codecov-action@v1
+      - name: Build + Test
+        run: mvn clean test

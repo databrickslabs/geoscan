@@ -1,36 +1,38 @@
 import unittest
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import *
 from pyspark.sql.utils import IllegalArgumentException
 import pandas as pd
-import glob, os
-from geoscan import Geoscan, GeoscanModel
-from geoscan import GeoscanPersonalized, GeoscanPersonalizedModel
+from geoscan.geoscan import *
 import json
+from pathlib import Path
+import os
+
 
 class GeoscanTest(unittest.TestCase):
 
     def setUp(self):
 
-        # this test will only work after a mvn package shaded as UBER jar
-        jar_file = "{}/{}-{}.jar".format(
-            os.getenv('TARGET_DIR'),
-            os.getenv('ARTIFACT'),
-            os.getenv('VERSION'))
+        # retrieve all jar files required for test
+        path = Path(os.getcwd())
+        dep_path = os.path.join(path, 'dist', 'dependencies')
+        dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
+        spark_conf = ':'.join(dep_file)
+        self.spark_conf = spark_conf
 
         # inject scala classes
-        self.spark = (
-            SparkSession.builder.appName("GEOSCAN")
-                .config("spark.driver.extraClassPath", jar_file)
-                .master("local")
-                .getOrCreate()
-        )
+        self.spark = SparkSession.builder.appName("geoscan") \
+            .config("spark.driver.extraClassPath", spark_conf) \
+            .master("local") \
+            .getOrCreate()
 
     def tearDown(self) -> None:
         self.spark.stop()
 
     def test_signature(self):
+
+        print("SPARK CONFIGURATION")
+        print(self.spark_conf)
 
         # should fail when specifying the wrong type
         with self.assertRaises(TypeError):
@@ -68,6 +70,6 @@ class GeoscanTest(unittest.TestCase):
         geojson.show()
         self.assertEqual(users, geojson.count())
 
-## MAIN
+
 if __name__ == '__main__':
     unittest.main()

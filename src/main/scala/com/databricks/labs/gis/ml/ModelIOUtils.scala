@@ -55,17 +55,16 @@ object ModelIOUtils {
    */
   def saveMetadata(instance: Params, path: String, sc: SparkContext): Unit = {
     val metadataPath = new Path(path, "metadata").toString
-    val metadataJson = getMetadataToSave(instance, sc)
+    val metadataJson = getMetadataToSave(instance)
     sc.parallelize(Seq(metadataJson), 1).saveAsTextFile(metadataPath)
   }
 
   /**
    * As our model extends Param interface, we can easily extract all parameters as JSON elements
    * @param instance the model to save
-   * @param sc the spark context, implicitly provided by Spark API
    * @return a JSON representation of all our parameters as defined in our pipeline
    */
-  def getMetadataToSave(instance: Params, sc: SparkContext): String = {
+  def getMetadataToSave(instance: Params): String = {
     val uid = instance.uid
     val params = instance.extractParamMap().toSeq.asInstanceOf[Seq[ParamPair[Any]]]
     val jsonParams = render(params.map { case ParamPair(p, v) => p.name -> parse(p.jsonEncode(v)) }.toList)
