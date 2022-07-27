@@ -1,7 +1,6 @@
 import subprocess
 import re
 from setuptools import find_packages, setup
-import semver
 
 
 # run a shell command and return stdout
@@ -24,8 +23,6 @@ latest_tag = run_cmd('git describe --abbrev=0 --tags')
 m = re.search('.*(\d+\.\d+\.\d+).*', latest_tag, re.IGNORECASE)
 if m:
     build_version = m.group(1)
-    # validate that this is a valid semantic version - will throw exception if not
-    semver.VersionInfo.parse(build_version)
     print("Building version [{}]".format(build_version))
 else:
     raise "Could not extract version from tag {}".format(latest_tag)
