@@ -289,6 +289,7 @@
                                 <argument>install</argument>
                                 <argument>-r</argument>
                                 <argument>requirements.txt</argument>
+                                <argument>coverage==6.4.1</argument>
                             </arguments>
                         </configuration>
                     </execution>
