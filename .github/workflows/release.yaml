@@ -16,67 +16,67 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-        # The next step is to install a JDK and maven environment
-        # A settings.xml file with credentials will be created and stored in that folder
-        # See next step for settings.xml creation
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-
-        # maven release requires tagging / pushing changes back to code, hence enforcing maven write access to branch
-        # The setup-java action is actually the simplest way to configure maven's settings.xml
-        # server-id: id that matches your server Id in project's pom.xml <scm><connection></scm></connection>
-        # username: is the username that sets up the build
-        # password: is the passed token through $GITHUB_TOKEN
-      - name: Set up Maven Central
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: "11"
-          server-id: github
-
-        # Because release:prepare actually commit, it’s necessary to configure the user and email
-      - name: Configure Git user
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-
-        # We decide to set up releases as manual actions in order to fully control our destiny :)
-        # Given a tag specified as input action, we extract MAJOR.MINOR.PATCH numbers
-        # Tag will become our master RELEASE and incremented for next SNAPSHOT as part of the maven release plugin
-      - name: Compute next development version
-        run: |
-          releaseVersion=${{ github.event.inputs.releaseVersion }}
-          n=${releaseVersion//[!0-9]/ }
-          a=(${n//\./ })
-          nextPatch=$((${a[2]} + 1))
-          developmentVersion="${a[0]}.${a[1]}.${nextPatch}-SNAPSHOT"
-          echo "DEVELOPMENT_VERSION=${developmentVersion}" >> $GITHUB_ENV
-
-        # See more information about maven release plugin, but essentially does the following
-        # - Change the version in the POM from x-SNAPSHOT to a new version
-        # - Transform the SCM information in the POM to include the final destination of the tag
-        # - Commit the modified POM
-        # - Tag the code in the SCM with a version name
-        # - Bump the version in the POM to a new value y-SNAPSHOT
-        # - Commit the modified POM
-        # Plugin will use the credentials found in the generated settings.xml file and the GITHUB_TOKEN env variable
-      - name: Prepare maven release
-        run: mvn -B release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        # See more information about maven release plugin, but essentially does the following
-        # - Checkout from an SCM URL with optional tag
-        # - Run the predefined Maven deploy goal
-        # The deploy phase will make use of the GITHUB_TOKEN env variable and the <distributionManagement> on pom.xml
-      - name: Perform maven release
-        run: mvn -B release:perform
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        # The next step is to install a JDK and maven environment
+#        # A settings.xml file with credentials will be created and stored in that folder
+#        # See next step for settings.xml creation
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-maven-
+#
+#        # maven release requires tagging / pushing changes back to code, hence enforcing maven write access to branch
+#        # The setup-java action is actually the simplest way to configure maven's settings.xml
+#        # server-id: id that matches your server Id in project's pom.xml <scm><connection></scm></connection>
+#        # username: is the username that sets up the build
+#        # password: is the passed token through $GITHUB_TOKEN
+#      - name: Set up Maven Central
+#        uses: actions/setup-java@v2
+#        with:
+#          distribution: 'zulu'
+#          java-version: "11"
+#          server-id: github
+#
+#        # Because release:prepare actually commit, it’s necessary to configure the user and email
+#      - name: Configure Git user
+#        run: |
+#          git config user.email "actions@github.com"
+#          git config user.name "GitHub Actions"
+#
+#        # We decide to set up releases as manual actions in order to fully control our destiny :)
+#        # Given a tag specified as input action, we extract MAJOR.MINOR.PATCH numbers
+#        # Tag will become our master RELEASE and incremented for next SNAPSHOT as part of the maven release plugin
+#      - name: Compute next development version
+#        run: |
+#          releaseVersion=${{ github.event.inputs.releaseVersion }}
+#          n=${releaseVersion//[!0-9]/ }
+#          a=(${n//\./ })
+#          nextPatch=$((${a[2]} + 1))
+#          developmentVersion="${a[0]}.${a[1]}.${nextPatch}-SNAPSHOT"
+#          echo "DEVELOPMENT_VERSION=${developmentVersion}" >> $GITHUB_ENV
+#
+#        # See more information about maven release plugin, but essentially does the following
+#        # - Change the version in the POM from x-SNAPSHOT to a new version
+#        # - Transform the SCM information in the POM to include the final destination of the tag
+#        # - Commit the modified POM
+#        # - Tag the code in the SCM with a version name
+#        # - Bump the version in the POM to a new value y-SNAPSHOT
+#        # - Commit the modified POM
+#        # Plugin will use the credentials found in the generated settings.xml file and the GITHUB_TOKEN env variable
+#      - name: Prepare maven release
+#        run: mvn -B release:prepare -DreleaseVersion=${{ github.event.inputs.releaseVersion }} -DdevelopmentVersion=${{ env.DEVELOPMENT_VERSION }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#        # See more information about maven release plugin, but essentially does the following
+#        # - Checkout from an SCM URL with optional tag
+#        # - Run the predefined Maven deploy goal
+#        # The deploy phase will make use of the GITHUB_TOKEN env variable and the <distributionManagement> on pom.xml
+#      - name: Perform maven release
+#        run: mvn -B release:perform
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # We test and package our code against python 3.9 distribution
       - name: Set up Python

@@ -1,6 +1,7 @@
 import subprocess
 import re
 from setuptools import find_packages, setup
+import semver
 
 
 # run a shell command and return stdout
@@ -11,18 +12,16 @@ def run_cmd(cmd):
                       f"STDERR: {cmd_proc.stderr.decode('utf-8')}")
     return cmd_proc.stdout.decode('utf-8').strip()
 
-
-#
 # fetch the most recent version tag to use as build version
-#
 latest_tag = run_cmd('git describe --abbrev=0 --tags')
 
 # set by maven and following semantic versioning style version: https://semver.org
 # we only keep MAJOR.MINOR.PATCH
-
 m = re.search('.*(\d+\.\d+\.\d+).*', latest_tag, re.IGNORECASE)
 if m:
     build_version = m.group(1)
+    # validate that this is a valid semantic version - will throw exception if not
+    semver.VersionInfo.parse(build_version)
     print("Building version [{}]".format(build_version))
 else:
     raise "Could not extract version from tag {}".format(latest_tag)
