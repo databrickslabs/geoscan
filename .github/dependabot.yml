@@ -4,7 +4,19 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Although we're happy to keep legend-delta up to date with legend development
+      # upgrading to spark core dependencies is more critical
+      - dependency-name: org.apache.spark:*
+      - dependency-name: org.scala-lang:*
+      # ignoring maven plugins
+      - dependency-name: org.apache.maven.plugins:*
   - package-ecosystem: "pip"
     directory: "/python"
     schedule:
       interval: "weekly"
+    ignore:
+      # Although we're happy to keep legend-delta up to date with legend development
+      # upgrading to spark core dependencies is more critical
+      - dependency-name: pyspark
+      - dependency-name: pandas
