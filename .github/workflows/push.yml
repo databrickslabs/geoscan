@@ -32,5 +32,6 @@ jobs:
 
         # Pyspark test are integration-tests and requires packaging all dependencies first before
         # invoking a pyspark context. This logic is included in pom.xml and triggered on mvn verify goal
+        # note that verify implies signing artifacts as part of a release. Since we only verify and not release, skip it
       - name: Run Scala and Python tests
-        run: mvn clean verify
+        run: mvn clean verify -Dgpg.skip
