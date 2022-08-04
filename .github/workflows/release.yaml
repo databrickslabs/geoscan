@@ -37,7 +37,7 @@ jobs:
         # And install any dependency required for unit testing
       - name: Install dependencies
         working-directory: ./python
-        run: pip install -U -r requirements.txt
+        run: pip install -U -r requirements.txt wheel semver
 
         # Here comes the crux of our python development. See core logic in our setup.py file
         # Given a successful maven release, we get the latest tag to date, compute the version
