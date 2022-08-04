@@ -2,6 +2,7 @@
 
 [![build](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml/badge.svg?style=for-the-badge)](https://github.com/databrickslabs/geoscan/actions/workflows/push.yml) 
 [![codecov](https://codecov.io/gh/databrickslabs/geoscan/branch/master/graph/badge.svg?token=0UKFCOO9OM&style=for-the-badge)](https://codecov.io/gh/databrickslabs/geoscan)
+[![Maven Central](https://img.shields.io/maven-central/v/com.databricks.labs/geoscan.svg)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22geoscan)
 
 *DBSCAN (density-based spatial clustering of applications with noise) is a clustering technique used to group points that
 are closely packed together. Compared to other clustering methodologies, it doesn't require you to indicate the number
