@@ -2,10 +2,10 @@ name: Geoscan Maven Release
 
 on:
   workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: "New release version"
-        required: true
+#    inputs:
+#      releaseVersion:
+#        description: "New release version"
+#        required: true
 
 jobs:
   release:
