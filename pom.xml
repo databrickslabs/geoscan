@@ -59,7 +59,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>1.8</java.version>
-        <json.version>3.7.0-M11</json.version>
+        <json.version>4.1.0-M2</json.version>
     </properties>
 
     <dependencies>
