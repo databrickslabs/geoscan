@@ -7,6 +7,13 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      # Used to authenticate to PyPI via OIDC and sign the release's artifacts with sigstore-python.
+      id-token: write
+      # Used to attach signing artifacts to the published release.
+      contents: write
+
     steps:
 
       # The first step is obviously to check out the repository
@@ -52,6 +59,4 @@ jobs:
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
-          password: ${{ secrets.LABS_PYPI_TOKEN }}
           packages_dir: python/dist/
