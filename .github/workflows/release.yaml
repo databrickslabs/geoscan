@@ -11,17 +11,17 @@ jobs:
 
       # The first step is obviously to check out the repository
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       # We test and package our code against python 3.9 distribution
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: "3.9"
 
         # we create our own pip cache where dependencies from requirements.txt will be stored
       - name: Configure Python
-        uses: actions/cache@v2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         id: cache
         with:
           path: ~/.cache/pip
@@ -50,7 +50,7 @@ jobs:
 
         # with our packaged application, we simply deploy to pypi repo provided our token stored as secret
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
         with:
           user: __token__
           password: ${{ secrets.LABS_PYPI_TOKEN }}
